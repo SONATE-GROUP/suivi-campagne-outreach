@@ -14,6 +14,11 @@
   --color-ink-muted-2: #5a7a6a;
   --color-ink-positive: #4caf7d;
   --color-ink-danger: #e05050;
+  --color-ink-sidebar-beige: #f5f0e8;
+  --color-ink-sidebar-beige-border: #e0d5c0;
+  --color-ink-sidebar-beige-active: #e8dfc9;
+  --color-ink-sidebar-beige-text: #1a2e25;
+  --color-ink-sidebar-beige-muted: #7a7268;
 }
 
 @theme inline {
@@ -29,6 +34,11 @@
   --color-ink-muted-2: var(--color-ink-muted-2);
   --color-ink-positive: var(--color-ink-positive);
   --color-ink-danger: var(--color-ink-danger);
+  --color-ink-sidebar-beige: var(--color-ink-sidebar-beige);
+  --color-ink-sidebar-beige-border: var(--color-ink-sidebar-beige-border);
+  --color-ink-sidebar-beige-active: var(--color-ink-sidebar-beige-active);
+  --color-ink-sidebar-beige-text: var(--color-ink-sidebar-beige-text);
+  --color-ink-sidebar-beige-muted: var(--color-ink-sidebar-beige-muted);
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
