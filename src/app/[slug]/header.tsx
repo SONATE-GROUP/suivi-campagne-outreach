@@ -16,7 +16,7 @@ export function DashboardHeader({
         <img src="/logo/sonate-carre-01.png" alt="Sonate" className="h-14 w-14" />
         <div>
           <p className="text-xs uppercase tracking-wide text-sonate-orange-dark">
-            Suivi outreach
+            Suivi des campagnes
           </p>
           <h1 className="text-xl font-bold text-sonate-green">{clientName}</h1>
         </div>
