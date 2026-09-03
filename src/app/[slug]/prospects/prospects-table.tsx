@@ -19,24 +19,43 @@ type Lead = {
 export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaignTags: string[] }) {
   const [search, setSearch] = useState("");
   const [campaignFilter, setCampaignFilter] = useState("all");
-  const [repliedOnly, setRepliedOnly] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [repliedFilter, setRepliedFilter] = useState("all");
+
+  const statuses = useMemo(
+    () => Array.from(new Set(leads.map((l) => l.status).filter((s): s is string => !!s))),
+    [leads]
+  );
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return leads.filter((lead) => {
       if (campaignFilter !== "all" && lead.campaign.nameTag !== campaignFilter) return false;
-      if (repliedOnly && !lead.replied) return false;
+      if (statusFilter !== "all" && lead.status !== statusFilter) return false;
+      if (repliedFilter === "yes" && !lead.replied) return false;
+      if (repliedFilter === "no" && lead.replied) return false;
       if (!q) return true;
-      const haystack = `${lead.firstname ?? ""} ${lead.lastname ?? ""} ${lead.companyName ?? ""} ${lead.email ?? ""}`.toLowerCase();
+      const haystack = [
+        lead.firstname,
+        lead.lastname,
+        lead.companyName,
+        lead.email,
+        lead.status,
+        lead.linkedinUrl,
+        lead.campaign.nameTag,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
       return haystack.includes(q);
     });
-  }, [leads, search, campaignFilter, repliedOnly]);
+  }, [leads, search, campaignFilter, statusFilter, repliedFilter]);
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
         <input
-          placeholder="Rechercher (nom, entreprise, email)"
+          placeholder="Rechercher (n'importe quel champ)"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-64 rounded-lg border border-sonate-green-border bg-white px-3 py-2 text-sm outline-none focus:border-sonate-green"
@@ -53,14 +72,27 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
             </option>
           ))}
         </select>
-        <label className="flex items-center gap-2 text-sm text-sonate-ink">
-          <input
-            type="checkbox"
-            checked={repliedOnly}
-            onChange={(e) => setRepliedOnly(e.target.checked)}
-          />
-          A répondu uniquement
-        </label>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="rounded-lg border border-sonate-green-border bg-white px-3 py-2 text-sm outline-none focus:border-sonate-green"
+        >
+          <option value="all">Tous les statuts</option>
+          {statuses.map((status) => (
+            <option key={status} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
+        <select
+          value={repliedFilter}
+          onChange={(e) => setRepliedFilter(e.target.value)}
+          className="rounded-lg border border-sonate-green-border bg-white px-3 py-2 text-sm outline-none focus:border-sonate-green"
+        >
+          <option value="all">Réponse : tous</option>
+          <option value="yes">A répondu</option>
+          <option value="no">N&apos;a pas répondu</option>
+        </select>
         <span className="ml-auto text-sm text-sonate-muted">
           {filtered.length} prospect{filtered.length > 1 ? "s" : ""}
         </span>
