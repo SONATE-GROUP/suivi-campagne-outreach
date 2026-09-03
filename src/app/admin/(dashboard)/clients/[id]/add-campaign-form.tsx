@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+const inputClass =
+  "rounded-lg border border-ink-border-strong bg-ink-border px-3 py-2 text-sm text-ink-cream outline-none";
+
 export function AddCampaignForm({ clientId }: { clientId: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -39,7 +42,7 @@ export function AddCampaignForm({ clientId }: { clientId: string }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="rounded-lg bg-sonate-orange px-4 py-2.5 text-sm font-semibold text-sonate-ivory transition hover:bg-sonate-orange-dark"
+        className="w-fit rounded-lg bg-ink-orange px-4 py-2.5 text-sm font-bold text-white transition"
       >
         + Ajouter une campagne
       </button>
@@ -49,40 +52,40 @@ export function AddCampaignForm({ clientId }: { clientId: string }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-3 rounded-2xl border border-sonate-cream bg-sonate-ivory-light p-6"
+      className="flex flex-col gap-3 rounded-xl border border-ink-border bg-ink-card p-6"
     >
-      <h3 className="font-semibold text-sonate-green">Nouvelle campagne</h3>
+      <h3 className="font-bold text-ink-cream">Nouvelle campagne</h3>
       <div className="grid gap-3 sm:grid-cols-2">
         <input
           placeholder="Nom (ex : Managers équipes)"
           value={nameTag}
           onChange={(e) => setNameTag(e.target.value)}
           required
-          className="rounded-lg border border-sonate-green-border bg-white px-3 py-2 text-sm outline-none focus:border-sonate-green"
+          className={inputClass}
         />
         <input
           placeholder="ID campagne LGM"
           value={lgmCampaignId}
           onChange={(e) => setLgmCampaignId(e.target.value)}
           required
-          className="rounded-lg border border-sonate-green-border bg-white px-3 py-2 text-sm outline-none focus:border-sonate-green"
+          className={inputClass}
         />
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-ink-danger">{error}</p>}
 
       <div className="flex gap-3">
         <button
           type="submit"
           disabled={loading}
-          className="rounded-lg bg-sonate-green px-4 py-2 text-sm font-semibold text-sonate-ivory hover:bg-sonate-green-dark disabled:opacity-60"
+          className="rounded-lg bg-ink-orange px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
         >
           {loading ? "Ajout..." : "Ajouter"}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="rounded-lg px-4 py-2 text-sm text-sonate-muted hover:text-sonate-ink"
+          className="rounded-lg px-4 py-2 text-sm text-ink-muted hover:text-ink-cream"
         >
           Annuler
         </button>

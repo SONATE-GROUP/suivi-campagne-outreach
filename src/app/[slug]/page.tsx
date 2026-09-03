@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { getClientBySlug, getClientOverview } from "@/lib/dashboard";
-import { DashboardHeader } from "./header";
 import { StatCard, RateBar } from "./stat-card";
 import { TrendChart } from "./trend-chart";
 import { CampaignChart } from "./campaign-chart";
@@ -80,31 +79,29 @@ export default async function ClientDashboardPage({
     .sort((a, b) => b.getTime() - a.getTime())[0];
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-10">
-      <DashboardHeader slug={slug} clientName={client.name} active="overview" />
-
-      <div className="-mb-4 flex flex-wrap items-center justify-between gap-2">
-        {lastSync ? (
-          <p className="text-xs text-sonate-muted">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-7">
+      <div>
+        <h1 className="text-[22px] font-bold text-ink-cream">Vue d&apos;ensemble</h1>
+        {lastSync && (
+          <p className="mt-1 text-[13px] text-ink-muted">
             Dernière synchronisation :{" "}
             {lastSync.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}
           </p>
-        ) : (
-          <span />
         )}
-        <div className="flex flex-wrap items-center gap-3">
-          <CampaignFilter slug={slug} campaigns={allCampaigns} />
-          <SyncButton slug={slug} />
-          <a
-            href={`/api/export/${slug}/stats${exportSuffix}`}
-            className="rounded-lg border border-sonate-cream bg-white px-4 py-2 text-sm text-sonate-ink transition hover:border-sonate-green-border"
-          >
-            Export CSV
-          </a>
-        </div>
       </div>
 
-      <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="flex flex-wrap items-center gap-3">
+        <CampaignFilter slug={slug} campaigns={allCampaigns} />
+        <SyncButton slug={slug} />
+        <a
+          href={`/api/export/${slug}/stats${exportSuffix}`}
+          className="rounded-lg border border-ink-border-strong px-4 py-2 text-sm text-ink-cream transition hover:bg-ink-card"
+        >
+          Export CSV
+        </a>
+      </div>
+
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <StatCard label="Audience totale" value={totals.audienceSize} />
         <StatCard label="Contactés" value={totals.contacted} />
         <StatCard label="Réponses" value={totals.replies} />
@@ -113,7 +110,7 @@ export default async function ClientDashboardPage({
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-4 rounded-2xl border border-sonate-cream bg-white p-5">
+        <div className="flex flex-col gap-4 rounded-xl border border-ink-border bg-ink-card p-5">
           <RateBar
             label="Taux d'acceptation LinkedIn"
             value={ratio(totals.connectionRequestsAccepted, totals.connectionRequestsSent)}
@@ -125,7 +122,7 @@ export default async function ClientDashboardPage({
             benchmark="Généralement entre 10 et 25 %"
           />
         </div>
-        <div className="flex flex-col gap-4 rounded-2xl border border-sonate-cream bg-white p-5">
+        <div className="flex flex-col gap-4 rounded-xl border border-ink-border bg-ink-card p-5">
           <RateBar
             label="Taux d'ouverture emails"
             value={ratio(totals.emailsOpened, totals.emailsSent)}
@@ -145,51 +142,52 @@ export default async function ClientDashboardPage({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="font-semibold text-sonate-ink">Évolution</h2>
+        <h2 className="text-[13px] font-bold uppercase tracking-wide text-ink-muted-2">
+          Évolution
+        </h2>
         <TrendChart data={timeSeries} />
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="font-semibold text-sonate-ink">Par campagne</h2>
+        <h2 className="text-[13px] font-bold uppercase tracking-wide text-ink-muted-2">
+          Par campagne
+        </h2>
         <CampaignChart data={chartData} />
 
-        <div className="overflow-x-auto rounded-2xl border border-sonate-cream bg-white">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-sonate-cream text-left text-xs uppercase tracking-wide text-sonate-muted">
-                <th className="px-4 py-3">Campagne</th>
-                <th className="px-4 py-3">Audience</th>
-                <th className="px-4 py-3">Contactés</th>
-                <th className="px-4 py-3">Réponses</th>
-                <th className="px-4 py-3">Gagnés</th>
-                <th className="px-4 py-3">Statut</th>
-              </tr>
-            </thead>
-            <tbody>
-              {campaigns.map((c) => (
-                <tr key={c.id} className="border-b border-sonate-cream last:border-0">
-                  <td className="px-4 py-3 font-medium text-sonate-ink">{c.nameTag}</td>
-                  <td className="px-4 py-3">{c.latest?.audienceSize ?? "-"}</td>
-                  <td className="px-4 py-3">{c.latest?.contacted ?? "-"}</td>
-                  <td className="px-4 py-3">{c.latest?.replies ?? "-"}</td>
-                  <td className="px-4 py-3">{c.latest?.won ?? "-"}</td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                        c.active
-                          ? "bg-sonate-green-100 text-sonate-green"
-                          : "bg-sonate-cream text-sonate-muted"
-                      }`}
-                    >
-                      {c.active ? "Active" : "En pause"}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-[1fr_90px_90px_90px_90px_90px] gap-3 px-4 py-1.5 text-[11px] font-bold uppercase tracking-wide text-ink-muted-2">
+            <span>Campagne</span>
+            <span>Audience</span>
+            <span>Contactés</span>
+            <span>Réponses</span>
+            <span>Gagnés</span>
+            <span>Statut</span>
+          </div>
+          {campaigns.map((c) => (
+            <div
+              key={c.id}
+              className="grid grid-cols-[1fr_90px_90px_90px_90px_90px] items-center gap-3 rounded-lg bg-ink-card px-4 py-3 text-sm"
+            >
+              <span className="font-semibold text-ink-cream">{c.nameTag}</span>
+              <span className="text-ink-muted">{c.latest?.audienceSize ?? "-"}</span>
+              <span className="text-ink-muted">{c.latest?.contacted ?? "-"}</span>
+              <span className="text-ink-muted">{c.latest?.replies ?? "-"}</span>
+              <span className="font-semibold text-ink-orange">{c.latest?.won ?? "-"}</span>
+              <span>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                    c.active
+                      ? "border border-ink-positive/40 text-ink-positive"
+                      : "border border-ink-border-strong text-ink-muted"
+                  }`}
+                >
+                  {c.active ? "Active" : "En pause"}
+                </span>
+              </span>
+            </div>
+          ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }

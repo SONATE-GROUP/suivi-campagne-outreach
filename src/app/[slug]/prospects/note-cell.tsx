@@ -30,10 +30,10 @@ export function NoteCell({ leadId, initialNote }: { leadId: string; initialNote:
         onBlur={save}
         placeholder="Ajouter une note..."
         rows={1}
-        className="w-full resize-y rounded-lg border border-transparent bg-transparent px-2 py-1 text-sm text-sonate-ink outline-none transition placeholder:text-sonate-muted hover:border-sonate-cream focus:border-sonate-green focus:bg-white"
+        className="w-full resize-y rounded-lg border border-transparent bg-transparent px-2 py-1 text-sm text-ink-cream outline-none transition placeholder:text-ink-muted-2 hover:border-ink-border focus:border-ink-border-strong focus:bg-ink-bg"
       />
-      {saving && <span className="mt-1 shrink-0 text-xs text-sonate-muted">...</span>}
-      {!saving && !saved && <span className="mt-1 shrink-0 text-xs text-sonate-orange-dark">●</span>}
+      {saving && <span className="mt-1 shrink-0 text-xs text-ink-muted">...</span>}
+      {!saving && !saved && <span className="mt-1 shrink-0 text-xs text-ink-orange">●</span>}
     </div>
   );
 }

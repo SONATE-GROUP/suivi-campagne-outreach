@@ -37,30 +37,28 @@ export function CampaignRow({
   }
 
   return (
-    <div className="flex items-center justify-between rounded-xl border border-sonate-cream bg-white px-5 py-3">
+    <div className="flex items-center justify-between rounded-xl border border-ink-border bg-ink-card px-5 py-3">
       <div>
-        <p className="font-medium text-sonate-ink">{nameTag}</p>
-        <p className="text-xs text-sonate-muted">LGM ID : {lgmCampaignId}</p>
+        <p className="font-medium text-ink-cream">{nameTag}</p>
+        <p className="text-xs text-ink-muted">LGM ID : {lgmCampaignId}</p>
       </div>
       <div className="flex items-center gap-4">
         <span
-          className={`text-xs font-medium ${
-            active ? "text-sonate-green-mid" : "text-sonate-muted"
-          }`}
+          className={`text-xs font-medium ${active ? "text-ink-positive" : "text-ink-muted"}`}
         >
           {active ? "Active" : "En pause"}
         </span>
         <button
           onClick={toggleActive}
           disabled={loading}
-          className="text-xs text-sonate-orange-dark underline underline-offset-2 disabled:opacity-60"
+          className="text-xs text-ink-orange underline underline-offset-2 disabled:opacity-60"
         >
           {active ? "Mettre en pause" : "Réactiver"}
         </button>
         <button
           onClick={remove}
           disabled={loading}
-          className="text-xs text-red-600 underline underline-offset-2 disabled:opacity-60"
+          className="text-xs text-ink-danger underline underline-offset-2 disabled:opacity-60"
         >
           Supprimer
         </button>

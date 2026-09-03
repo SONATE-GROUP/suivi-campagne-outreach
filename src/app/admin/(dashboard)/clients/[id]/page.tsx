@@ -23,15 +23,15 @@ export default async function ClientAdminPage({
   if (!client) notFound();
 
   return (
-    <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-6 py-10">
-      <Link href="/admin" className="text-sm text-sonate-muted hover:text-sonate-ink">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-7">
+      <Link href="/admin" className="text-sm text-ink-muted hover:text-ink-cream">
         ← Tous les clients
       </Link>
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-sonate-green">{client.name}</h1>
-          <p className="text-sm text-sonate-muted">/{client.slug}</p>
+          <h1 className="text-[22px] font-bold text-ink-cream">{client.name}</h1>
+          <p className="text-sm text-ink-muted">/{client.slug}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <CopyLink slug={client.slug} />
@@ -40,9 +40,11 @@ export default async function ClientAdminPage({
       </div>
 
       <section className="flex flex-col gap-4">
-        <h2 className="font-semibold text-sonate-ink">Campagnes</h2>
+        <h2 className="text-[13px] font-bold uppercase tracking-wide text-ink-muted-2">
+          Campagnes
+        </h2>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2.5">
           {client.campaigns.map((c) => (
             <CampaignRow
               key={c.id}
@@ -54,12 +56,12 @@ export default async function ClientAdminPage({
           ))}
 
           {client.campaigns.length === 0 && (
-            <p className="text-sm text-sonate-muted">Aucune campagne pour le moment.</p>
+            <p className="text-sm text-ink-muted">Aucune campagne pour le moment.</p>
           )}
         </div>
 
         <AddCampaignForm clientId={client.id} />
       </section>
-    </main>
+    </div>
   );
 }

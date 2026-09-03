@@ -14,9 +14,9 @@ import {
 type Point = { date: string; contacted: number; replies: number; won: number };
 
 const COLORS = {
-  contacted: "#123C33",
-  replies: "#2f7d5b",
-  won: "#FF6B3D",
+  contacted: "#7a9e8e",
+  replies: "#4caf7d",
+  won: "#e8571a",
 };
 
 function formatDate(value: string | number | undefined) {
@@ -28,7 +28,7 @@ function formatDate(value: string | number | undefined) {
 export function TrendChart({ data }: { data: Point[] }) {
   if (data.length < 2) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-sonate-cream bg-white text-sm text-sonate-muted">
+      <div className="flex h-64 items-center justify-center rounded-xl border border-ink-border bg-ink-card text-sm text-ink-muted">
         Pas encore assez de données pour afficher une tendance (au moins 2 synchronisations
         nécessaires).
       </div>
@@ -36,19 +36,19 @@ export function TrendChart({ data }: { data: Point[] }) {
   }
 
   return (
-    <div className="h-72 rounded-2xl border border-sonate-cream bg-white p-4">
+    <div className="h-72 rounded-xl border border-ink-border bg-ink-card p-4">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-          <CartesianGrid stroke="#E8DFC9" vertical={false} />
+          <CartesianGrid stroke="#2d4a3e" vertical={false} />
           <XAxis
             dataKey="date"
             tickFormatter={formatDate}
-            tick={{ fontSize: 12, fill: "#6b6f6c" }}
-            axisLine={{ stroke: "#E8DFC9" }}
+            tick={{ fontSize: 12, fill: "#7a9e8e" }}
+            axisLine={{ stroke: "#2d4a3e" }}
             tickLine={false}
           />
           <YAxis
-            tick={{ fontSize: 12, fill: "#6b6f6c" }}
+            tick={{ fontSize: 12, fill: "#7a9e8e" }}
             axisLine={false}
             tickLine={false}
             width={32}
@@ -56,12 +56,14 @@ export function TrendChart({ data }: { data: Point[] }) {
           <Tooltip
             labelFormatter={(label) => formatDate(label as string)}
             contentStyle={{
-              borderRadius: 12,
-              border: "1px solid #E8DFC9",
+              borderRadius: 10,
+              border: "1px solid #2d4a3e",
+              backgroundColor: "#142218",
               fontSize: 13,
+              color: "#f5f0e8",
             }}
           />
-          <Legend wrapperStyle={{ fontSize: 13 }} />
+          <Legend wrapperStyle={{ fontSize: 13, color: "#f5f0e8" }} />
           <Line
             type="monotone"
             dataKey="contacted"

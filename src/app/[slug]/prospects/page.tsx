@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { getClientBySlug, getClientLeads } from "@/lib/dashboard";
-import { DashboardHeader } from "../header";
 import { ProspectsTable } from "./prospects-table";
 
 export const dynamic = "force-dynamic";
@@ -18,17 +17,17 @@ export default async function ProspectsPage({
   const campaignTags = Array.from(new Set(leads.map((l) => l.campaign.nameTag)));
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-10">
-      <DashboardHeader slug={slug} clientName={client.name} active="prospects" />
-      <div className="-mb-4 flex justify-end">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-[22px] font-bold text-ink-cream">Prospects</h1>
         <a
           href={`/api/export/${slug}/prospects`}
-          className="rounded-lg border border-sonate-cream bg-white px-4 py-2 text-sm text-sonate-ink transition hover:border-sonate-green-border"
+          className="rounded-lg border border-ink-border-strong px-4 py-2 text-sm text-ink-cream transition hover:bg-ink-card"
         >
-          Exporter en CSV
+          Export CSV
         </a>
       </div>
       <ProspectsTable leads={leads} campaignTags={campaignTags} />
-    </main>
+    </div>
   );
 }

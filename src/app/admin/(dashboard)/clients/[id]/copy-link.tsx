@@ -15,7 +15,7 @@ export function CopyLink({ slug }: { slug: string }) {
   return (
     <button
       onClick={copy}
-      className="rounded-lg border border-sonate-cream bg-white px-4 py-2 text-sm text-sonate-ink transition hover:border-sonate-green-border"
+      className="rounded-lg border border-ink-border-strong px-4 py-2 text-sm text-ink-cream transition hover:bg-ink-card"
     >
       {copied ? "Lien copié !" : `Copier le lien du dashboard (/${slug})`}
     </button>

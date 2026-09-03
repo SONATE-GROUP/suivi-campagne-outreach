@@ -31,11 +31,11 @@ export function SyncButton({ clientId }: { clientId: string }) {
       <button
         onClick={handleSync}
         disabled={loading}
-        className="rounded-lg border border-sonate-green px-4 py-2 text-sm font-semibold text-sonate-green transition hover:bg-sonate-green-50 disabled:opacity-60"
+        className="rounded-lg border border-ink-border-strong px-4 py-2 text-sm font-semibold text-ink-cream transition hover:bg-ink-card disabled:opacity-60"
       >
         {loading ? "Synchronisation..." : "Synchroniser maintenant"}
       </button>
-      {message && <span className="text-sm text-sonate-muted">{message}</span>}
+      {message && <span className="text-sm text-ink-muted">{message}</span>}
     </div>
   );
 }

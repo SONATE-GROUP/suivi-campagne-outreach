@@ -61,12 +61,12 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
           placeholder="Rechercher (n'importe quel champ)"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-64 rounded-lg border border-sonate-green-border bg-white px-3 py-2 text-sm outline-none focus:border-sonate-green"
+          className="w-64 rounded-lg border border-ink-border bg-ink-card px-3 py-2 text-sm text-ink-cream outline-none"
         />
         <select
           value={campaignFilter}
           onChange={(e) => setCampaignFilter(e.target.value)}
-          className="rounded-lg border border-sonate-green-border bg-white px-3 py-2 text-sm outline-none focus:border-sonate-green"
+          className="cursor-pointer rounded-lg border border-ink-border bg-ink-card px-3 py-2 text-sm text-ink-cream outline-none"
         >
           <option value="all">Toutes les campagnes</option>
           {campaignTags.map((tag) => (
@@ -78,7 +78,7 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border border-sonate-green-border bg-white px-3 py-2 text-sm outline-none focus:border-sonate-green"
+          className="cursor-pointer rounded-lg border border-ink-border bg-ink-card px-3 py-2 text-sm text-ink-cream outline-none"
         >
           <option value="all">Tous les statuts</option>
           {statuses.map((status) => (
@@ -90,21 +90,21 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
         <select
           value={repliedFilter}
           onChange={(e) => setRepliedFilter(e.target.value)}
-          className="rounded-lg border border-sonate-green-border bg-white px-3 py-2 text-sm outline-none focus:border-sonate-green"
+          className="cursor-pointer rounded-lg border border-ink-border bg-ink-card px-3 py-2 text-sm text-ink-cream outline-none"
         >
           <option value="all">Réponse : tous</option>
           <option value="yes">A répondu</option>
           <option value="no">N&apos;a pas répondu</option>
         </select>
-        <span className="ml-auto text-sm text-sonate-muted">
+        <span className="ml-auto text-sm text-ink-muted">
           {filtered.length} prospect{filtered.length > 1 ? "s" : ""}
         </span>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-sonate-cream bg-white">
+      <div className="overflow-x-auto rounded-xl border border-ink-border bg-ink-card">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-sonate-cream text-left text-xs uppercase tracking-wide text-sonate-muted">
+            <tr className="border-b border-ink-border text-left text-[11px] font-bold uppercase tracking-wide text-ink-muted-2">
               <th className="px-4 py-3">Nom</th>
               <th className="px-4 py-3">Entreprise</th>
               <th className="px-4 py-3">Campagne</th>
@@ -117,21 +117,21 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
           </thead>
           <tbody>
             {filtered.map((lead) => (
-              <tr key={lead.id} className="border-b border-sonate-cream last:border-0">
-                <td className="px-4 py-3 font-medium text-sonate-ink">
+              <tr key={lead.id} className="border-b border-ink-border last:border-0">
+                <td className="px-4 py-3 font-medium text-ink-cream">
                   {lead.firstname} {lead.lastname}
                 </td>
-                <td className="px-4 py-3 text-sonate-ink">{lead.companyName}</td>
-                <td className="px-4 py-3 text-sonate-muted">{lead.campaign.nameTag}</td>
-                <td className="px-4 py-3 text-sonate-muted">{lead.status}</td>
-                <td className="px-4 py-3">{lead.messagesSent}</td>
+                <td className="px-4 py-3 text-ink-cream">{lead.companyName}</td>
+                <td className="px-4 py-3 text-ink-muted">{lead.campaign.nameTag}</td>
+                <td className="px-4 py-3 text-ink-muted">{lead.status}</td>
+                <td className="px-4 py-3 text-ink-muted">{lead.messagesSent}</td>
                 <td className="px-4 py-3">
                   {lead.replied ? (
-                    <span className="rounded-full bg-sonate-green-100 px-2 py-0.5 text-xs font-medium text-sonate-green">
+                    <span className="rounded-full border border-ink-positive/40 px-2 py-0.5 text-xs font-medium text-ink-positive">
                       Oui
                     </span>
                   ) : (
-                    <span className="text-xs text-sonate-muted">Non</span>
+                    <span className="text-xs text-ink-muted-2">Non</span>
                   )}
                 </td>
                 <td className="px-4 py-3">
@@ -140,7 +140,7 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
                       href={lead.linkedinUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-sonate-orange-dark underline underline-offset-2"
+                      className="text-ink-orange underline underline-offset-2"
                     >
                       LinkedIn
                     </a>
@@ -154,7 +154,7 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
 
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-6 text-center text-sonate-muted">
+                <td colSpan={8} className="px-4 py-6 text-center text-ink-muted">
                   Aucun prospect ne correspond à ces filtres.
                 </td>
               </tr>

@@ -24,7 +24,7 @@ export function CampaignFilter({
     <select
       value={current}
       onChange={handleChange}
-      className="rounded-lg border border-sonate-green-border bg-white px-3 py-2 text-sm outline-none focus:border-sonate-green"
+      className="cursor-pointer rounded-lg border border-ink-border bg-ink-card px-3 py-2 text-sm text-ink-cream outline-none"
     >
       <option value="all">Toutes les campagnes</option>
       {campaigns.map((c) => (
