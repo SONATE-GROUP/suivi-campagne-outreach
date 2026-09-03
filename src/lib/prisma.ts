@@ -15,6 +15,18 @@ function createPrismaClient() {
   return new PrismaClient({ adapter });
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+// Le client n'est instancié qu'au premier vrai accès (et non à l'import du module),
+// pour que Next.js puisse analyser les routes au build sans que TURSO_DATABASE_URL
+// soit nécessairement disponible à ce moment-là.
+function getPrismaClient(): PrismaClient {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = createPrismaClient();
+  }
+  return globalForPrisma.prisma;
+}
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop, receiver) {
+    return Reflect.get(getPrismaClient(), prop, receiver);
+  },
+});
