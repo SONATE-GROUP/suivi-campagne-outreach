@@ -4,6 +4,7 @@ import { DashboardHeader } from "./header";
 import { StatCard, RateBar } from "./stat-card";
 import { TrendChart } from "./trend-chart";
 import { CampaignChart } from "./campaign-chart";
+import { SyncButton } from "./sync-button";
 
 export const dynamic = "force-dynamic";
 
@@ -83,12 +84,15 @@ export default async function ClientDashboardPage({
         ) : (
           <span />
         )}
-        <a
-          href={`/api/export/${slug}/stats`}
-          className="rounded-lg border border-sonate-cream bg-white px-4 py-2 text-sm text-sonate-ink transition hover:border-sonate-green-border"
-        >
-          Export CSV
-        </a>
+        <div className="flex flex-wrap items-center gap-3">
+          <SyncButton slug={slug} />
+          <a
+            href={`/api/export/${slug}/stats`}
+            className="rounded-lg border border-sonate-cream bg-white px-4 py-2 text-sm text-sonate-ink transition hover:border-sonate-green-border"
+          >
+            Export CSV
+          </a>
+        </div>
       </div>
 
       <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
