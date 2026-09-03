@@ -23,7 +23,15 @@ export function StatCard({
   );
 }
 
-export function RateBar({ label, value }: { label: string; value: number }) {
+export function RateBar({
+  label,
+  value,
+  benchmark,
+}: {
+  label: string;
+  value: number;
+  benchmark?: string;
+}) {
   const pct = Math.max(0, Math.min(100, Math.round(value * 100)));
   return (
     <div className="flex flex-col gap-1.5">
@@ -37,6 +45,7 @@ export function RateBar({ label, value }: { label: string; value: number }) {
           style={{ width: `${pct}%` }}
         />
       </div>
+      {benchmark && <p className="text-xs text-sonate-muted">{benchmark}</p>}
     </div>
   );
 }

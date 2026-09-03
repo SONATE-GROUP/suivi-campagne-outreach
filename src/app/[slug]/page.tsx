@@ -117,24 +117,29 @@ export default async function ClientDashboardPage({
           <RateBar
             label="Taux d'acceptation LinkedIn"
             value={ratio(totals.connectionRequestsAccepted, totals.connectionRequestsSent)}
+            benchmark="Généralement entre 20 et 40 %"
           />
           <RateBar
             label="Taux de réponse LinkedIn"
             value={ratio(totals.linkedinReplies, totals.linkedinMessagesSent)}
+            benchmark="Généralement entre 10 et 25 %"
           />
         </div>
         <div className="flex flex-col gap-4 rounded-2xl border border-sonate-cream bg-white p-5">
           <RateBar
             label="Taux d'ouverture emails"
             value={ratio(totals.emailsOpened, totals.emailsSent)}
+            benchmark="Généralement entre 40 et 60 %"
           />
           <RateBar
             label="Taux de réponse emails"
             value={ratio(totals.emailReplies, totals.emailsSent)}
+            benchmark="Généralement entre 5 et 15 %"
           />
           <RateBar
             label="Taux de clic emails"
             value={ratio(totals.emailClicks, totals.emailsSent)}
+            benchmark="Généralement entre 2 et 5 %"
           />
         </div>
       </section>
