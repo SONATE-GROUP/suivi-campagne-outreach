@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope-latin-300-normal.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope-latin-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope-latin-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Manrope";
+  src: url("/fonts/manrope-latin-800-normal.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --color-sonate-green: #123c33;
+  --color-sonate-green-dark: #0d2a24;
+  --color-sonate-green-mid: #2f7d5b;
+  --color-sonate-green-50: #f3f8f5;
+  --color-sonate-green-100: #e7efe9;
+  --color-sonate-green-border: #cfe0da;
+  --color-sonate-orange: #ff6b3d;
+  --color-sonate-orange-dark: #c2410c;
+  --color-sonate-orange-soft: #ffe3d6;
+  --color-sonate-orange-border: #f4c9b8;
+  --color-sonate-ivory: #f6f1e8;
+  --color-sonate-ivory-light: #fcfaf5;
+  --color-sonate-ink: #1f2421;
+  --color-sonate-cream: #e8dfc9;
+  --color-sonate-muted: #6b6f6c;
+}
+
+@theme inline {
+  --color-sonate-green: var(--color-sonate-green);
+  --color-sonate-green-dark: var(--color-sonate-green-dark);
+  --color-sonate-green-mid: var(--color-sonate-green-mid);
+  --color-sonate-green-50: var(--color-sonate-green-50);
+  --color-sonate-green-100: var(--color-sonate-green-100);
+  --color-sonate-green-border: var(--color-sonate-green-border);
+  --color-sonate-orange: var(--color-sonate-orange);
+  --color-sonate-orange-dark: var(--color-sonate-orange-dark);
+  --color-sonate-orange-soft: var(--color-sonate-orange-soft);
+  --color-sonate-orange-border: var(--color-sonate-orange-border);
+  --color-sonate-ivory: var(--color-sonate-ivory);
+  --color-sonate-ivory-light: var(--color-sonate-ivory-light);
+  --color-sonate-ink: var(--color-sonate-ink);
+  --color-sonate-cream: var(--color-sonate-cream);
+  --color-sonate-muted: var(--color-sonate-muted);
+  --font-sans: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+body {
+  background: var(--color-sonate-ivory);
+  color: var(--color-sonate-ink);
+  font-family: var(--font-sans);
+}

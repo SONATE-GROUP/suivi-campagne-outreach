@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  passwordHash String
+  lgmApiKey    String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  campaigns Campaign[]
+}
+
+model Campaign {
+  id             String   @id @default(cuid())
+  clientId       String
+  client         Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  lgmCampaignId  String
+  nameTag        String
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  snapshots CampaignSnapshot[]
+  leads     Lead[]
+
+  @@unique([clientId, lgmCampaignId])
+}
+
+model CampaignSnapshot {
+  id         String   @id @default(cuid())
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  capturedAt DateTime @default(now())
+
+  campaignName String
+  sender       String
+
+  audienceSize            Int
+  contacted                Int
+  replies                  Int
+  won                      Int
+  lost                     Int
+  completed                Int
+  contactedLinkedin        Int
+  contactedEmail           Int
+  connectionRequestsSent   Int
+  relations                Int
+  connectionRequestsAccepted Int
+  linkedinMessagesSent     Int
+  linkedinReplies          Int
+  alreadyConnected         Int
+  emailsSent               Int
+  emailsReceived           Int
+  emailsOpened             Int
+  emailReplies             Int
+  emailClicks              Int
+  emailBounced             Int
+
+  @@index([campaignId, capturedAt])
+}
+
+model Lead {
+  id            String   @id @default(cuid())
+  campaignId    String
+  campaign      Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  lgmLeadId     String
+  firstname     String?
+  lastname      String?
+  companyName   String?
+  linkedinUrl   String?
+  email         String?
+  status        String?
+  messagesSent  Int      @default(0)
+  messagesOpened Int     @default(0)
+  replied       Boolean  @default(false)
+  replyContent  String?
+  updatedAt     DateTime @updatedAt
+
+  @@unique([campaignId, lgmLeadId])
+}
