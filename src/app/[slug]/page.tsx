@@ -74,12 +74,22 @@ export default async function ClientDashboardPage({
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-10">
       <DashboardHeader slug={slug} clientName={client.name} active="overview" />
 
-      {lastSync && (
-        <p className="-mt-4 text-xs text-sonate-muted">
-          Dernière synchronisation :{" "}
-          {lastSync.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}
-        </p>
-      )}
+      <div className="-mb-4 flex flex-wrap items-center justify-between gap-2">
+        {lastSync ? (
+          <p className="text-xs text-sonate-muted">
+            Dernière synchronisation :{" "}
+            {lastSync.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}
+          </p>
+        ) : (
+          <span />
+        )}
+        <a
+          href={`/api/export/${slug}/stats`}
+          className="rounded-lg border border-sonate-cream bg-white px-4 py-2 text-sm text-sonate-ink transition hover:border-sonate-green-border"
+        >
+          Exporter les stats en CSV
+        </a>
+      </div>
 
       <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         <StatCard label="Audience totale" value={totals.audienceSize} />

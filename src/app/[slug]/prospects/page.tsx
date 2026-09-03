@@ -20,6 +20,14 @@ export default async function ProspectsPage({
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-10">
       <DashboardHeader slug={slug} clientName={client.name} active="prospects" />
+      <div className="-mb-4 flex justify-end">
+        <a
+          href={`/api/export/${slug}/prospects`}
+          className="rounded-lg border border-sonate-cream bg-white px-4 py-2 text-sm text-sonate-ink transition hover:border-sonate-green-border"
+        >
+          Exporter en CSV
+        </a>
+      </div>
       <ProspectsTable leads={leads} campaignTags={campaignTags} />
     </main>
   );
