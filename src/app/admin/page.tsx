@@ -15,7 +15,7 @@ export default async function AdminPage() {
     <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-6 py-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <img src="/logo/sonate-carre-01.png" alt="Sonate" className="h-9 w-9" />
+          <img src="/logo/sonate-carre-01.png" alt="Sonate" className="h-14 w-14" />
           <h1 className="text-xl font-bold text-sonate-green">Administration</h1>
         </div>
         <LogoutButton />
