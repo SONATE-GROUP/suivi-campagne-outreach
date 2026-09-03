@@ -4,7 +4,7 @@ export async function getClientBySlug(slug: string) {
   return prisma.client.findUnique({ where: { slug } });
 }
 
-export async function getClientOverview(clientId: string) {
+export async function getClientOverview(clientId: string, campaignId?: string) {
   const campaigns = await prisma.campaign.findMany({
     where: { clientId },
     orderBy: { createdAt: "asc" },
@@ -20,8 +20,14 @@ export async function getClientOverview(clientId: string) {
     latest: c.snapshots[0] ?? null,
   }));
 
+  const filteredCampaigns = campaignId
+    ? campaignsWithLatest.filter((c) => c.id === campaignId)
+    : campaignsWithLatest;
+
   const timeSeriesRaw = await prisma.campaignSnapshot.findMany({
-    where: { campaign: { clientId } },
+    where: {
+      campaign: { clientId, ...(campaignId ? { id: campaignId } : {}) },
+    },
     orderBy: { capturedAt: "asc" },
     select: {
       capturedAt: true,
@@ -50,12 +56,16 @@ export async function getClientOverview(clientId: string) {
     a.date.localeCompare(b.date)
   );
 
-  return { campaigns: campaignsWithLatest, timeSeries };
+  return {
+    campaigns: filteredCampaigns,
+    allCampaigns: campaignsWithLatest,
+    timeSeries,
+  };
 }
 
-export async function getClientLeads(clientId: string) {
+export async function getClientLeads(clientId: string, campaignId?: string) {
   return prisma.lead.findMany({
-    where: { campaign: { clientId } },
+    where: { campaign: { clientId, ...(campaignId ? { id: campaignId } : {}) } },
     include: { campaign: { select: { nameTag: true } } },
     orderBy: { updatedAt: "desc" },
   });

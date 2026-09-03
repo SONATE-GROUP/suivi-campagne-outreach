@@ -5,19 +5,27 @@ import { StatCard, RateBar } from "./stat-card";
 import { TrendChart } from "./trend-chart";
 import { CampaignChart } from "./campaign-chart";
 import { SyncButton } from "./sync-button";
+import { CampaignFilter } from "./campaign-filter";
 
 export const dynamic = "force-dynamic";
 
 export default async function ClientDashboardPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ campaign?: string }>;
 }) {
   const { slug } = await params;
+  const { campaign: campaignId } = await searchParams;
   const client = await getClientBySlug(slug);
   if (!client) notFound();
 
-  const { campaigns, timeSeries } = await getClientOverview(client.id);
+  const { campaigns, allCampaigns, timeSeries } = await getClientOverview(
+    client.id,
+    campaignId
+  );
+  const exportSuffix = campaignId ? `?campaign=${campaignId}` : "";
 
   const totals = campaigns.reduce(
     (acc, c) => {
@@ -85,9 +93,10 @@ export default async function ClientDashboardPage({
           <span />
         )}
         <div className="flex flex-wrap items-center gap-3">
+          <CampaignFilter slug={slug} campaigns={allCampaigns} />
           <SyncButton slug={slug} />
           <a
-            href={`/api/export/${slug}/stats`}
+            href={`/api/export/${slug}/stats${exportSuffix}`}
             className="rounded-lg border border-sonate-cream bg-white px-4 py-2 text-sm text-sonate-ink transition hover:border-sonate-green-border"
           >
             Export CSV

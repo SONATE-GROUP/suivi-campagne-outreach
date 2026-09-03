@@ -5,10 +5,11 @@ import { prisma } from "@/lib/prisma";
 import { toCsv } from "@/lib/csv";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
+  const campaignId = req.nextUrl.searchParams.get("campaign") ?? undefined;
   const session = await getSession();
   const authorized =
     session?.role === "admin" || (session?.role === "client" && session.slug === slug);
@@ -23,7 +24,9 @@ export async function GET(
   }
 
   const snapshots = await prisma.campaignSnapshot.findMany({
-    where: { campaign: { clientId: client.id } },
+    where: {
+      campaign: { clientId: client.id, ...(campaignId ? { id: campaignId } : {}) },
+    },
     include: { campaign: { select: { nameTag: true } } },
     orderBy: [{ campaign: { nameTag: "asc" } }, { capturedAt: "asc" }],
   });
