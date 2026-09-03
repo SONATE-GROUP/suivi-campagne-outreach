@@ -87,7 +87,7 @@ export default async function ClientDashboardPage({
           href={`/api/export/${slug}/stats`}
           className="rounded-lg border border-sonate-cream bg-white px-4 py-2 text-sm text-sonate-ink transition hover:border-sonate-green-border"
         >
-          Exporter les stats en CSV
+          Export CSV
         </a>
       </div>
 
