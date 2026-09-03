@@ -11,7 +11,7 @@ dans une vraie interface, synchronisée automatiquement.
 ## Stack
 
 - **Next.js 16** (App Router) + Tailwind v4, charte graphique Sonate
-- **PostgreSQL** via Prisma (historique des stats dans le temps, pas juste un snapshot)
+- **Turso** (libSQL) via Prisma (historique des stats dans le temps, pas juste un snapshot)
 - **Recharts** pour les graphiques
 - Auth par mot de passe : un espace `/admin` pour toi, un lien `/<slug-client>` par client
 - Synchronisation automatique via **Vercel Cron**, + bouton de synchro manuelle dans l'admin
@@ -34,10 +34,13 @@ dans le Sheet), ce qui permet d'afficher une vraie courbe d'évolution dans le t
 
 ```bash
 npm install
-cp .env.example .env   # puis remplir DATABASE_URL, AUTH_SECRET, ADMIN_PASSWORD, CRON_SECRET
+cp .env.example .env   # puis remplir TURSO_DATABASE_URL, TURSO_AUTH_TOKEN, AUTH_SECRET, ADMIN_PASSWORD, CRON_SECRET
 npm run db:push         # crée les tables dans la base
 npm run dev
 ```
+
+En local, `TURSO_DATABASE_URL` peut aussi pointer vers un fichier SQLite local (ex.
+`file:./dev.db`, sans `TURSO_AUTH_TOKEN`) pour développer sans base distante.
 
 Va sur `http://localhost:3000/admin/login`, connecte-toi avec `ADMIN_PASSWORD`, puis crée un
 client (nom, slug, mot de passe, clé API LGM) et ajoute ses campagnes (l'ID de campagne LGM se
@@ -46,11 +49,12 @@ trouve dans l'URL de la campagne sur LaGrowthMachine). La première synchro se l
 
 ## Déploiement (Vercel)
 
-1. Crée une base Postgres (Vercel Postgres, [Neon](https://neon.tech) ou Supabase — toutes
-   fonctionnent, il suffit d'une `DATABASE_URL`).
+1. Crée une base sur [Turso](https://turso.tech) (`turso db create suivi-campagnes`), puis
+   récupère l'URL (`turso db show suivi-campagnes --url`) et un token d'auth
+   (`turso db tokens create suivi-campagnes`).
 2. Importe ce repo dans Vercel.
-3. Renseigne les variables d'environnement (`DATABASE_URL`, `AUTH_SECRET`, `ADMIN_PASSWORD`,
-   `CRON_SECRET`) dans les settings du projet Vercel.
+3. Renseigne les variables d'environnement (`TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`,
+   `AUTH_SECRET`, `ADMIN_PASSWORD`, `CRON_SECRET`) dans les settings du projet Vercel.
 4. Déploie. Le cron défini dans `vercel.json` (tous les jours à 6h) appellera automatiquement
    `/api/cron/sync` pour rafraîchir toutes les campagnes de tous les clients.
    > Le plan gratuit Vercel limite les crons à une exécution par jour. Passe sur un plan payant
