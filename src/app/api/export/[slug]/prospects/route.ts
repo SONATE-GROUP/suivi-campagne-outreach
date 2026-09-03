@@ -34,6 +34,7 @@ export async function GET(
     "Messages envoyes",
     "Messages ouverts",
     "A repondu",
+    "Note",
     "Derniere mise a jour",
   ];
 
@@ -48,6 +49,7 @@ export async function GET(
     "Messages envoyes": lead.messagesSent,
     "Messages ouverts": lead.messagesOpened,
     "A repondu": lead.replied ? "Oui" : "Non",
+    Note: lead.note ?? "",
     "Derniere mise a jour": lead.updatedAt.toISOString(),
   }));
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { NoteCell } from "./note-cell";
 
 type Lead = {
   id: string;
@@ -13,6 +14,7 @@ type Lead = {
   messagesSent: number;
   messagesOpened: number;
   replied: boolean;
+  note: string | null;
   campaign: { nameTag: string };
 };
 
@@ -43,6 +45,7 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
         lead.status,
         lead.linkedinUrl,
         lead.campaign.nameTag,
+        lead.note,
       ]
         .filter(Boolean)
         .join(" ")
@@ -109,6 +112,7 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
               <th className="px-4 py-3">Messages envoyés</th>
               <th className="px-4 py-3">Réponse</th>
               <th className="px-4 py-3">Profil</th>
+              <th className="px-4 py-3">Note</th>
             </tr>
           </thead>
           <tbody>
@@ -142,12 +146,15 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
                     </a>
                   )}
                 </td>
+                <td className="px-4 py-2">
+                  <NoteCell leadId={lead.id} initialNote={lead.note} />
+                </td>
               </tr>
             ))}
 
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-6 text-center text-sonate-muted">
+                <td colSpan={8} className="px-4 py-6 text-center text-sonate-muted">
                   Aucun prospect ne correspond à ces filtres.
                 </td>
               </tr>

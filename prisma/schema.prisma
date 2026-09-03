@@ -82,6 +82,7 @@ model Lead {
   messagesOpened Int     @default(0)
   replied       Boolean  @default(false)
   replyContent  String?
+  note          String?
   updatedAt     DateTime @updatedAt
 
   @@unique([campaignId, lgmLeadId])
