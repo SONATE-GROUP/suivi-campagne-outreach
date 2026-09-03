@@ -13,7 +13,7 @@ export function DashboardHeader({
   return (
     <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b border-sonate-cream bg-sonate-ivory pb-6 pt-6">
       <div className="flex items-center gap-3">
-        <img src="/logo/sonate-carre-01.png" alt="Sonate" className="h-14 w-14" />
+        <img src="/logo/sonate-carre-01.png" alt="Sonate" className="h-24 w-24" />
         <div>
           <p className="text-xs uppercase tracking-wide text-sonate-orange-dark">
             Suivi des campagnes
