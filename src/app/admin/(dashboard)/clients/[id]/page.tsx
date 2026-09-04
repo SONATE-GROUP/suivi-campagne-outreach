@@ -52,6 +52,7 @@ export default async function ClientAdminPage({
               nameTag={c.nameTag}
               lgmCampaignId={c.lgmCampaignId}
               active={c.active}
+              sequenceImage={c.sequenceImage}
             />
           ))}
 

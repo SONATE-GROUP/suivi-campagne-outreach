@@ -75,6 +75,7 @@ export async function getCampaignSequences(clientId: string, campaignId?: string
     id: c.id,
     nameTag: c.nameTag,
     steps: c.sequenceSteps,
+    sequenceImage: c.sequenceImage,
   }));
 }
 

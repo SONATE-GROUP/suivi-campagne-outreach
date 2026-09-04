@@ -17,10 +17,13 @@ export async function PATCH(
 
   const { id } = await params;
   const body = await req.json();
-  const data: Record<string, string | boolean> = {};
+  const data: Record<string, string | boolean | null> = {};
 
   if (body.nameTag) data.nameTag = body.nameTag;
   if (typeof body.active === "boolean") data.active = body.active;
+  if (typeof body.sequenceImage === "string" || body.sequenceImage === null) {
+    data.sequenceImage = body.sequenceImage;
+  }
 
   const campaign = await prisma.campaign.update({ where: { id }, data });
   return NextResponse.json({ id: campaign.id });

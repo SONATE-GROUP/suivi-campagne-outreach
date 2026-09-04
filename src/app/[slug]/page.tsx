@@ -229,7 +229,7 @@ export default async function ClientDashboardPage({
             {sequences.length > 1 && (
               <p className="text-sm font-semibold text-ink-cream">{seq.nameTag}</p>
             )}
-            <SequenceFlow steps={seq.steps} />
+            <SequenceFlow steps={seq.steps} imageUrl={seq.sequenceImage} />
           </div>
         ))}
       </section>

@@ -27,6 +27,7 @@ model Campaign {
   lgmCampaignId  String
   nameTag        String
   active         Boolean  @default(true)
+  sequenceImage  String?
   createdAt      DateTime @default(now())
 
   snapshots     CampaignSnapshot[]
