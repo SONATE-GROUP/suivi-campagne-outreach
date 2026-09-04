@@ -7,6 +7,7 @@ export type InboxConversation = LgmConversation & {
   leadName: string;
   companyName: string | null;
   linkedinUrl: string | null;
+  hasReplied: boolean;
   hidden: boolean;
 };
 
@@ -47,6 +48,7 @@ export async function getInboxConversations(clientId: string): Promise<InboxConv
           leadName: name || "Prospect inconnu",
           companyName: lead?.companyName ?? null,
           linkedinUrl: lead?.linkedinUrl ?? null,
+          hasReplied: lead?.replied ?? false,
           hidden: hiddenIds.has(c.id),
         };
       });
