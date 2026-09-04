@@ -68,15 +68,10 @@ export async function getCampaignSequences(clientId: string, campaignId?: string
   const campaigns = await prisma.campaign.findMany({
     where: { clientId, ...(campaignId ? { id: campaignId } : {}) },
     orderBy: { createdAt: "asc" },
-    include: { sequenceSteps: { orderBy: { order: "asc" } } },
+    select: { id: true, nameTag: true, sequenceImage: true },
   });
 
-  return campaigns.map((c) => ({
-    id: c.id,
-    nameTag: c.nameTag,
-    steps: c.sequenceSteps,
-    sequenceImage: c.sequenceImage,
-  }));
+  return campaigns;
 }
 
 export async function getClientLeads(clientId: string, campaignId?: string) {

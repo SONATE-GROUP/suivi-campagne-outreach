@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { fetchCampaignSnapshot, fetchCampaignLeads, fetchCampaignSequence } from "@/lib/lgm";
+import { fetchCampaignSnapshot, fetchCampaignLeads } from "@/lib/lgm";
 
 export async function syncCampaign(campaignId: string) {
   const campaign = await prisma.campaign.findUniqueOrThrow({
@@ -56,29 +56,6 @@ export async function syncCampaign(campaignId: string) {
         replied,
       },
     });
-  }
-
-  const sequence = await fetchCampaignSequence(
-    campaign.client.lgmApiKey,
-    campaign.lgmCampaignId
-  );
-
-  if (sequence.length > 0) {
-    await prisma.$transaction([
-      prisma.campaignSequenceStep.deleteMany({ where: { campaignId: campaign.id } }),
-      prisma.campaignSequenceStep.createMany({
-        data: sequence.map((step) => ({
-          campaignId: campaign.id,
-          lgmMessageId: step.id,
-          type: step.type,
-          channel: step.channel,
-          order: step.order,
-          active: step.active,
-          content: step.contentHtml || null,
-          subject: step.subjectHtml || null,
-        })),
-      }),
-    ]);
   }
 
   return { snapshotSaved: !!snapshot, leadsSynced: leads.length };
