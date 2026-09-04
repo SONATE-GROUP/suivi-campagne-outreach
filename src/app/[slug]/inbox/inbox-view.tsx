@@ -26,12 +26,31 @@ export function InboxView({
   const [messages, setMessages] = useState<LgmMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [showHidden, setShowHidden] = useState(false);
+  const [showAllMessages, setShowAllMessages] = useState(false);
+  const [campaignFilter, setCampaignFilter] = useState("all");
+  const [search, setSearch] = useState("");
 
   const hiddenCount = useMemo(() => conversations.filter((c) => c.hidden).length, [conversations]);
-  const visible = useMemo(
-    () => conversations.filter((c) => showHidden || !c.hidden),
-    [conversations, showHidden]
+  const campaignTags = useMemo(
+    () => Array.from(new Set(conversations.map((c) => c.campaignNameTag))).sort(),
+    [conversations]
   );
+  const visible = useMemo(() => {
+    const query = search.trim().toLocaleLowerCase("fr-FR");
+
+    return conversations.filter((conversation) => {
+      if (!showHidden && conversation.hidden) return false;
+      if (!showAllMessages && !conversation.hasReplied) return false;
+      if (campaignFilter !== "all" && conversation.campaignNameTag !== campaignFilter) return false;
+      if (!query) return true;
+
+      return [conversation.leadName, conversation.companyName]
+        .filter(Boolean)
+        .join(" ")
+        .toLocaleLowerCase("fr-FR")
+        .includes(query);
+    });
+  }, [campaignFilter, conversations, search, showAllMessages, showHidden]);
 
   async function openConversation(conv: InboxConversation) {
     setSelected(conv);
@@ -69,16 +88,50 @@ export function InboxView({
 
   return (
     <div className="flex flex-col gap-3">
-      {hiddenCount > 0 && (
-        <button
-          onClick={() => setShowHidden((v) => !v)}
-          className="w-fit text-xs text-ink-muted underline underline-offset-2 hover:text-ink-cream"
+      <div className="flex flex-wrap items-center gap-3">
+        <input
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Rechercher par nom ou entreprise"
+          aria-label="Rechercher par nom ou entreprise"
+          className="w-64 rounded-lg border border-ink-border bg-ink-card px-3 py-2 text-sm text-ink-cream outline-none placeholder:text-ink-muted-2"
+        />
+        <select
+          value={campaignFilter}
+          onChange={(event) => setCampaignFilter(event.target.value)}
+          aria-label="Filtrer par campagne"
+          className="cursor-pointer rounded-lg border border-ink-border bg-ink-card px-3 py-2 text-sm text-ink-cream outline-none"
         >
-          {showHidden
-            ? "Masquer les conversations masquées"
-            : `Afficher les conversations masquées (${hiddenCount})`}
+          <option value="all">Toutes les campagnes</option>
+          {campaignTags.map((campaignTag) => (
+            <option key={campaignTag} value={campaignTag}>
+              {campaignTag}
+            </option>
+          ))}
+        </select>
+        <button
+          type="button"
+          onClick={() => setShowAllMessages((value) => !value)}
+          className="text-xs text-ink-muted underline underline-offset-2 hover:text-ink-cream"
+        >
+          {showAllMessages ? "Afficher uniquement les réponses" : "Afficher tous les messages envoyés"}
         </button>
-      )}
+        {hiddenCount > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowHidden((value) => !value)}
+            className="text-xs text-ink-muted underline underline-offset-2 hover:text-ink-cream"
+          >
+            {showHidden
+              ? "Masquer les conversations masquées"
+              : `Afficher les conversations masquées (${hiddenCount})`}
+          </button>
+        )}
+        <span className="ml-auto text-sm text-ink-muted">
+          {visible.length} conversation{visible.length > 1 ? "s" : ""}
+        </span>
+      </div>
 
       <div className="flex h-[calc(100vh-260px)] min-h-[420px] gap-4">
         <div className="flex w-80 flex-shrink-0 flex-col overflow-y-auto rounded-xl border border-ink-border bg-ink-card">
@@ -115,6 +168,11 @@ export function InboxView({
               </button>
             </div>
           ))}
+          {visible.length === 0 && (
+            <div className="px-4 py-6 text-center text-sm text-ink-muted">
+              Aucun prospect ne correspond à ces filtres.
+            </div>
+          )}
         </div>
 
         <div className="flex flex-1 flex-col rounded-xl border border-ink-border bg-ink-card">
