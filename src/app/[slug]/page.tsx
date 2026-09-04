@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
-import { getClientBySlug, getClientOverview } from "@/lib/dashboard";
+import { getClientBySlug, getClientOverview, getCampaignSequences } from "@/lib/dashboard";
 import { StatCard } from "./stat-card";
 import { ChannelStatsCard } from "./channel-stats-card";
 import { TrendChart } from "./trend-chart";
 import { CampaignChart } from "./campaign-chart";
 import { SyncButton } from "./sync-button";
 import { CampaignFilter } from "./campaign-filter";
+import { SequenceFlow } from "./sequence-flow";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,7 @@ export default async function ClientDashboardPage({
     campaignId
   );
   const exportSuffix = campaignId ? `?campaign=${campaignId}` : "";
+  const sequences = await getCampaignSequences(client.id, campaignId);
 
   const totals = campaigns.reduce(
     (acc, c) => {
@@ -217,6 +219,20 @@ export default async function ClientDashboardPage({
           Évolution
         </h2>
         <TrendChart data={timeSeries} />
+      </section>
+
+      <section className="flex flex-col gap-5">
+        <h2 className="text-[13px] font-bold uppercase tracking-wide text-ink-muted-2">
+          Séquence
+        </h2>
+        {sequences.map((seq) => (
+          <div key={seq.id} className="flex flex-col gap-2">
+            {sequences.length > 1 && (
+              <p className="text-sm font-semibold text-ink-cream">{seq.nameTag}</p>
+            )}
+            <SequenceFlow steps={seq.steps} />
+          </div>
+        ))}
       </section>
 
       <section className="flex flex-col gap-3">

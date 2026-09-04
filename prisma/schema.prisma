@@ -29,10 +29,25 @@ model Campaign {
   active         Boolean  @default(true)
   createdAt      DateTime @default(now())
 
-  snapshots CampaignSnapshot[]
-  leads     Lead[]
+  snapshots     CampaignSnapshot[]
+  leads         Lead[]
+  sequenceSteps CampaignSequenceStep[]
 
   @@unique([clientId, lgmCampaignId])
+}
+
+model CampaignSequenceStep {
+  id            String   @id @default(cuid())
+  campaignId    String
+  campaign      Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  lgmMessageId  String
+  type          String
+  channel       String
+  order         Int
+  active        Boolean
+
+  @@unique([campaignId, lgmMessageId])
+  @@index([campaignId, order])
 }
 
 model CampaignSnapshot {

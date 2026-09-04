@@ -63,6 +63,20 @@ export async function getClientOverview(clientId: string, campaignId?: string) {
   };
 }
 
+export async function getCampaignSequences(clientId: string, campaignId?: string) {
+  const campaigns = await prisma.campaign.findMany({
+    where: { clientId, ...(campaignId ? { id: campaignId } : {}) },
+    orderBy: { createdAt: "asc" },
+    include: { sequenceSteps: { orderBy: { order: "asc" } } },
+  });
+
+  return campaigns.map((c) => ({
+    id: c.id,
+    nameTag: c.nameTag,
+    steps: c.sequenceSteps,
+  }));
+}
+
 export async function getClientLeads(clientId: string, campaignId?: string) {
   return prisma.lead.findMany({
     where: { campaign: { clientId, ...(campaignId ? { id: campaignId } : {}) } },

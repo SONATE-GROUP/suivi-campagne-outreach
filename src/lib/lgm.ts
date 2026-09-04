@@ -237,3 +237,30 @@ export async function fetchConversationMessages(
   if (!data || data.statusCode !== 200 || !data.data) return [];
   return data.data;
 }
+
+export type LgmSequenceStep = {
+  id: string;
+  type: string;
+  channel: string;
+  order: number;
+  active: boolean;
+};
+
+type LgmCampaignMessagesResponse = {
+  statusCode: number;
+  data: LgmSequenceStep[];
+  total: number;
+};
+
+// The steps that make up a campaign's scenario (Add relation, Send Message,
+// Wait, etc.), in order. LGM does not expose per-step lead counts via the
+// public API, so this only reflects the scenario's shape, not live volumes.
+export async function fetchCampaignSequence(
+  apiKey: string,
+  campaignId: string
+): Promise<LgmSequenceStep[]> {
+  const url = `${BASE_URL}/campaigns/${campaignId}/messages?apikey=${apiKey}`;
+  const data = (await lgmFetch(url)) as LgmCampaignMessagesResponse;
+  if (!data || data.statusCode !== 200 || !data.data) return [];
+  return [...data.data].sort((a, b) => a.order - b.order);
+}
