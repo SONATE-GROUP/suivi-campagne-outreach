@@ -220,19 +220,23 @@ export default async function ClientDashboardPage({
         <TrendChart data={timeSeries} />
       </section>
 
-      <section className="flex flex-col gap-5">
-        <h2 className="text-[13px] font-bold uppercase tracking-wide text-ink-muted-2">
-          Séquence
-        </h2>
-        {sequences.map((seq) => (
-          <div key={seq.id} className="flex flex-col gap-2">
-            {sequences.length > 1 && (
-              <p className="text-sm font-semibold text-ink-cream">{seq.nameTag}</p>
-            )}
-            <SequenceFlow imageUrl={seq.sequenceImage} />
-          </div>
-        ))}
-      </section>
+      {sequences.some((seq) => seq.sequenceImage) && (
+        <section className="flex flex-col gap-5">
+          <h2 className="text-[13px] font-bold uppercase tracking-wide text-ink-muted-2">
+            Séquence
+          </h2>
+          {sequences
+            .filter((seq) => seq.sequenceImage)
+            .map((seq) => (
+              <div key={seq.id} className="flex flex-col gap-2">
+                {sequences.length > 1 && (
+                  <p className="text-sm font-semibold text-ink-cream">{seq.nameTag}</p>
+                )}
+                <SequenceFlow imageUrl={seq.sequenceImage} />
+              </div>
+            ))}
+        </section>
+      )}
 
       <section className="flex flex-col gap-3">
         <h2 className="text-[13px] font-bold uppercase tracking-wide text-ink-muted-2">
