@@ -18,6 +18,7 @@ export function DashboardShell({
   const navItems = [
     { href: `/${slug}`, label: "Vue d'ensemble", icon: "📊" },
     { href: `/${slug}/prospects`, label: "Prospects", icon: "👥" },
+    { href: `/${slug}/inbox`, label: "Inbox", icon: "💬" },
   ];
 
   async function handleLogout() {

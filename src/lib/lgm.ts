@@ -161,3 +161,79 @@ export async function fetchCampaignLeads(
 
   return allLeads;
 }
+
+export type LgmConversation = {
+  id: string;
+  leadId: string;
+  identityId: string;
+  lastMessageAt: number;
+  lastMessageStatus: string;
+  lastMessageType: string;
+  status: string;
+};
+
+type LgmConversationsSearchResponse = {
+  statusCode: number;
+  data: LgmConversation[];
+  total: number;
+  hasMore: boolean;
+  nextToken?: string;
+};
+
+export type LgmMessage = {
+  id: string;
+  channel: string;
+  status: string;
+  content: string;
+  sender: string;
+  createdAt: string;
+  direction: "sent" | "received";
+  attachments: unknown[];
+};
+
+type LgmMessagesResponse = {
+  statusCode: number;
+  data: LgmMessage[];
+  total: number;
+};
+
+// Read-only: this app only ever displays LGM conversations, it never sends,
+// archives, snoozes or edits them. Do not add calls to the write endpoints
+// (POST /inbox/linkedin, /inbox/email, /inbox/conversations/*).
+export async function fetchConversationsForCampaign(
+  apiKey: string,
+  campaignId: string,
+  limit = 100
+): Promise<LgmConversation[]> {
+  let all: LgmConversation[] = [];
+  let searchAfter = "";
+  let hasMore = true;
+
+  while (hasMore) {
+    let url =
+      `${BASE_URL}/conversations/search?campaignIds=${campaignId}` +
+      `&limit=${limit}&sortField=lastMessageAt&sortDirection=-1&apikey=${apiKey}`;
+    if (searchAfter) url += `&searchAfter=${searchAfter}`;
+
+    const data = (await lgmFetch(url)) as LgmConversationsSearchResponse;
+    if (!data || data.statusCode !== 200 || !data.data) break;
+
+    all = all.concat(data.data);
+    hasMore = !!data.hasMore && !!data.nextToken;
+    searchAfter = data.nextToken ?? "";
+
+    if (all.length >= 500) break; // safety cap
+  }
+
+  return all;
+}
+
+export async function fetchConversationMessages(
+  apiKey: string,
+  conversationId: string
+): Promise<LgmMessage[]> {
+  const url = `${BASE_URL}/conversations/${conversationId}/messages?apikey=${apiKey}`;
+  const data = (await lgmFetch(url)) as LgmMessagesResponse;
+  if (!data || data.statusCode !== 200 || !data.data) return [];
+  return data.data;
+}
