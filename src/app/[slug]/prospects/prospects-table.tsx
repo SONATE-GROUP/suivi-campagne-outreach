@@ -18,20 +18,70 @@ type Lead = {
   campaign: { nameTag: string };
 };
 
+type SortKey =
+  | "name"
+  | "companyName"
+  | "campaign"
+  | "status"
+  | "messagesSent"
+  | "replied"
+  | "note";
+
+const COLUMNS: { key: SortKey; label: string }[] = [
+  { key: "name", label: "Nom" },
+  { key: "companyName", label: "Entreprise" },
+  { key: "campaign", label: "Campagne" },
+  { key: "status", label: "Statut" },
+  { key: "messagesSent", label: "Messages envoyés" },
+  { key: "replied", label: "Réponse" },
+];
+
+function sortValue(lead: Lead, key: SortKey): string | number {
+  switch (key) {
+    case "name":
+      return `${lead.lastname ?? ""} ${lead.firstname ?? ""}`.trim().toLowerCase();
+    case "companyName":
+      return (lead.companyName ?? "").toLowerCase();
+    case "campaign":
+      return lead.campaign.nameTag.toLowerCase();
+    case "status":
+      return (lead.status ?? "").toLowerCase();
+    case "messagesSent":
+      return lead.messagesSent;
+    case "replied":
+      return lead.replied ? 1 : 0;
+    case "note":
+      return (lead.note ?? "").toLowerCase();
+  }
+}
+
 export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaignTags: string[] }) {
   const [search, setSearch] = useState("");
   const [campaignFilter, setCampaignFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [repliedFilter, setRepliedFilter] = useState("all");
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const statuses = useMemo(
     () => Array.from(new Set(leads.map((l) => l.status).filter((s): s is string => !!s))),
     [leads]
   );
 
+  function toggleSort(key: SortKey) {
+    if (sortKey !== key) {
+      setSortKey(key);
+      setSortDir("asc");
+    } else if (sortDir === "asc") {
+      setSortDir("desc");
+    } else {
+      setSortKey(null);
+    }
+  }
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return leads.filter((lead) => {
+    const result = leads.filter((lead) => {
       if (campaignFilter !== "all" && lead.campaign.nameTag !== campaignFilter) return false;
       if (statusFilter !== "all" && lead.status !== statusFilter) return false;
       if (repliedFilter === "yes" && !lead.replied) return false;
@@ -52,7 +102,16 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [leads, search, campaignFilter, statusFilter, repliedFilter]);
+
+    if (!sortKey) return result;
+
+    return [...result].sort((a, b) => {
+      const va = sortValue(a, sortKey);
+      const vb = sortValue(b, sortKey);
+      const cmp = typeof va === "number" && typeof vb === "number" ? va - vb : String(va).localeCompare(String(vb));
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+  }, [leads, search, campaignFilter, statusFilter, repliedFilter, sortKey, sortDir]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -105,12 +164,19 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-ink-border text-left text-[11px] font-bold uppercase tracking-wide text-ink-muted-2">
-              <th className="px-4 py-3">Nom</th>
-              <th className="px-4 py-3">Entreprise</th>
-              <th className="px-4 py-3">Campagne</th>
-              <th className="px-4 py-3">Statut</th>
-              <th className="px-4 py-3">Messages envoyés</th>
-              <th className="px-4 py-3">Réponse</th>
+              {COLUMNS.map((col) => (
+                <th key={col.key} className="px-4 py-3">
+                  <button
+                    onClick={() => toggleSort(col.key)}
+                    className="flex cursor-pointer items-center gap-1 uppercase tracking-wide text-ink-muted-2 hover:text-ink-cream"
+                  >
+                    {col.label}
+                    <span className="text-ink-orange">
+                      {sortKey === col.key ? (sortDir === "asc" ? "↑" : "↓") : ""}
+                    </span>
+                  </button>
+                </th>
+              ))}
               <th className="px-4 py-3">Profil</th>
               <th className="px-4 py-3">Note</th>
             </tr>
