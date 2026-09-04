@@ -22,12 +22,11 @@ export default async function ClientDashboardPage({
   const client = await getClientBySlug(slug);
   if (!client) notFound();
 
-  const { campaigns, allCampaigns, timeSeries } = await getClientOverview(
-    client.id,
-    campaignId
-  );
+  const [{ campaigns, allCampaigns, timeSeries }, sequences] = await Promise.all([
+    getClientOverview(client.id, campaignId),
+    getCampaignSequences(client.id, campaignId),
+  ]);
   const exportSuffix = campaignId ? `?campaign=${campaignId}` : "";
-  const sequences = await getCampaignSequences(client.id, campaignId);
 
   const totals = campaigns.reduce(
     (acc, c) => {

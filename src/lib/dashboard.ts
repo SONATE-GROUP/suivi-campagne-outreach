@@ -5,13 +5,28 @@ export async function getClientBySlug(slug: string) {
 }
 
 export async function getClientOverview(clientId: string, campaignId?: string) {
-  const campaigns = await prisma.campaign.findMany({
-    where: { clientId },
-    orderBy: { createdAt: "asc" },
-    include: {
-      snapshots: { orderBy: { capturedAt: "desc" }, take: 1 },
-    },
-  });
+  const [campaigns, timeSeriesRaw] = await Promise.all([
+    prisma.campaign.findMany({
+      where: { clientId },
+      orderBy: { createdAt: "asc" },
+      include: {
+        snapshots: { orderBy: { capturedAt: "desc" }, take: 1 },
+      },
+    }),
+    prisma.campaignSnapshot.findMany({
+      where: {
+        campaign: { clientId, ...(campaignId ? { id: campaignId } : {}) },
+      },
+      orderBy: { capturedAt: "asc" },
+      select: {
+        capturedAt: true,
+        contacted: true,
+        replies: true,
+        won: true,
+        campaignId: true,
+      },
+    }),
+  ]);
 
   const campaignsWithLatest = campaigns.map((c) => ({
     id: c.id,
@@ -23,20 +38,6 @@ export async function getClientOverview(clientId: string, campaignId?: string) {
   const filteredCampaigns = campaignId
     ? campaignsWithLatest.filter((c) => c.id === campaignId)
     : campaignsWithLatest;
-
-  const timeSeriesRaw = await prisma.campaignSnapshot.findMany({
-    where: {
-      campaign: { clientId, ...(campaignId ? { id: campaignId } : {}) },
-    },
-    orderBy: { capturedAt: "asc" },
-    select: {
-      capturedAt: true,
-      contacted: true,
-      replies: true,
-      won: true,
-      campaignId: true,
-    },
-  });
 
   const byDay = new Map<
     string,
