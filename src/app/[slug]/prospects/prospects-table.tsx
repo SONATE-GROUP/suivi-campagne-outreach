@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { NoteCell } from "./note-cell";
+import { translateStatus } from "@/lib/status-labels";
 
 type Lead = {
   id: string;
@@ -142,7 +143,7 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
           <option value="all">Tous les statuts</option>
           {statuses.map((status) => (
             <option key={status} value={status}>
-              {status}
+              {translateStatus(status)}
             </option>
           ))}
         </select>
@@ -189,7 +190,7 @@ export function ProspectsTable({ leads, campaignTags }: { leads: Lead[]; campaig
                 </td>
                 <td className="px-4 py-3 text-ink-cream">{lead.companyName}</td>
                 <td className="px-4 py-3 text-ink-muted">{lead.campaign.nameTag}</td>
-                <td className="px-4 py-3 text-ink-muted">{lead.status}</td>
+                <td className="px-4 py-3 text-ink-muted">{translateStatus(lead.status)}</td>
                 <td className="px-4 py-3 text-ink-muted">{lead.messagesSent}</td>
                 <td className="px-4 py-3">
                   {lead.replied ? (

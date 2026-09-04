@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getClientBySlug, getClientLeads } from "@/lib/dashboard";
 import { toCsv } from "@/lib/csv";
+import { translateStatus } from "@/lib/status-labels";
 
 export async function GET(
   _req: NextRequest,
@@ -45,7 +46,7 @@ export async function GET(
     Entreprise: lead.companyName ?? "",
     "Profil LinkedIn": lead.linkedinUrl ?? "",
     Email: lead.email ?? "",
-    Statut: lead.status ?? "",
+    Statut: translateStatus(lead.status),
     "Messages envoyes": lead.messagesSent,
     "Messages ouverts": lead.messagesOpened,
     "A repondu": lead.replied ? "Oui" : "Non",
