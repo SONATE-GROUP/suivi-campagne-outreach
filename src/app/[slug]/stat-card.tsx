@@ -22,30 +22,3 @@ export function StatCard({
     </div>
   );
 }
-
-export function RateBar({
-  label,
-  value,
-  benchmark,
-}: {
-  label: string;
-  value: number;
-  benchmark?: string;
-}) {
-  const pct = Math.max(0, Math.min(100, Math.round(value * 100)));
-  return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-ink-cream">{label}</span>
-        <span className="font-bold text-ink-orange">{pct}%</span>
-      </div>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-ink-border">
-        <div
-          className="h-full rounded-full bg-ink-orange"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      {benchmark && <p className="text-xs text-ink-muted-2">{benchmark}</p>}
-    </div>
-  );
-}

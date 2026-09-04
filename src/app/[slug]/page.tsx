@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getClientBySlug, getClientOverview } from "@/lib/dashboard";
-import { StatCard, RateBar } from "./stat-card";
+import { StatCard } from "./stat-card";
+import { ChannelStatsCard } from "./channel-stats-card";
 import { TrendChart } from "./trend-chart";
 import { CampaignChart } from "./campaign-chart";
 import { SyncButton } from "./sync-button";
@@ -35,11 +36,15 @@ export default async function ClientDashboardPage({
       acc.replies += s.replies;
       acc.won += s.won;
       acc.lost += s.lost;
+      acc.contactedLinkedin += s.contactedLinkedin;
+      acc.alreadyConnected += s.alreadyConnected;
       acc.connectionRequestsSent += s.connectionRequestsSent;
       acc.connectionRequestsAccepted += s.connectionRequestsAccepted;
       acc.linkedinMessagesSent += s.linkedinMessagesSent;
       acc.linkedinReplies += s.linkedinReplies;
       acc.emailsSent += s.emailsSent;
+      acc.emailsReceived += s.emailsReceived;
+      acc.emailBounced += s.emailBounced;
       acc.emailsOpened += s.emailsOpened;
       acc.emailReplies += s.emailReplies;
       acc.emailClicks += s.emailClicks;
@@ -51,18 +56,22 @@ export default async function ClientDashboardPage({
       replies: 0,
       won: 0,
       lost: 0,
+      contactedLinkedin: 0,
+      alreadyConnected: 0,
       connectionRequestsSent: 0,
       connectionRequestsAccepted: 0,
       linkedinMessagesSent: 0,
       linkedinReplies: 0,
       emailsSent: 0,
+      emailsReceived: 0,
+      emailBounced: 0,
       emailsOpened: 0,
       emailReplies: 0,
       emailClicks: 0,
     }
   );
 
-  const ratio = (n: number, d: number) => (d > 0 ? n / d : 0);
+  const ratio = (n: number, d: number) => (d > 0 ? Math.round((n / d) * 100) : 0);
 
   const chartData = campaigns
     .filter((c) => c.latest)
@@ -110,35 +119,93 @@ export default async function ClientDashboardPage({
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-4 rounded-xl border border-ink-border bg-ink-card p-5">
-          <RateBar
-            label="Taux d'acceptation LinkedIn"
-            value={ratio(totals.connectionRequestsAccepted, totals.connectionRequestsSent)}
-            benchmark="Généralement entre 20 et 40 %"
-          />
-          <RateBar
-            label="Taux de réponse LinkedIn"
-            value={ratio(totals.linkedinReplies, totals.linkedinMessagesSent)}
-            benchmark="Généralement entre 10 et 25 %"
-          />
-        </div>
-        <div className="flex flex-col gap-4 rounded-xl border border-ink-border bg-ink-card p-5">
-          <RateBar
-            label="Taux d'ouverture emails"
-            value={ratio(totals.emailsOpened, totals.emailsSent)}
-            benchmark="Généralement entre 40 et 60 %"
-          />
-          <RateBar
-            label="Taux de réponse emails"
-            value={ratio(totals.emailReplies, totals.emailsSent)}
-            benchmark="Généralement entre 5 et 15 %"
-          />
-          <RateBar
-            label="Taux de clic emails"
-            value={ratio(totals.emailClicks, totals.emailsSent)}
-            benchmark="Généralement entre 2 et 5 %"
-          />
-        </div>
+        <ChannelStatsCard
+          title="LinkedIn"
+          icon="💼"
+          iconBg="#0A66C2"
+          won={totals.won}
+          rows={[
+            {
+              type: "bar",
+              label: "Contactés",
+              value: totals.contactedLinkedin,
+              pct: ratio(totals.contactedLinkedin, totals.audienceSize),
+            },
+            {
+              type: "bar",
+              label: "Déjà en contact",
+              value: totals.alreadyConnected,
+              pct: ratio(totals.alreadyConnected, totals.contactedLinkedin),
+            },
+            {
+              type: "bar",
+              label: "Demandes de connexion",
+              value: totals.connectionRequestsSent,
+              pct: ratio(totals.connectionRequestsSent, totals.contactedLinkedin),
+            },
+            {
+              type: "bar",
+              label: "Nouvelles connexions",
+              value: totals.connectionRequestsAccepted,
+              pct: ratio(totals.connectionRequestsAccepted, totals.connectionRequestsSent),
+            },
+            {
+              type: "bar",
+              label: "Réponses",
+              value: totals.linkedinReplies,
+              pct: ratio(totals.linkedinReplies, totals.connectionRequestsSent),
+            },
+          ]}
+        />
+        <ChannelStatsCard
+          title="Email"
+          icon="✉️"
+          iconBg="#EA4335"
+          won={totals.won}
+          rows={[
+            {
+              type: "bar",
+              label: "Emails envoyés",
+              value: totals.emailsSent,
+              pct: ratio(totals.emailsSent, totals.audienceSize),
+            },
+            {
+              type: "badges",
+              badges: [
+                {
+                  label: "Délivrés",
+                  value: totals.emailsReceived,
+                  pct: ratio(totals.emailsReceived, totals.emailsSent),
+                  color: "#4caf7d",
+                },
+                {
+                  label: "Rejetés",
+                  value: totals.emailBounced,
+                  pct: ratio(totals.emailBounced, totals.emailsSent),
+                  color: "#e8571a",
+                },
+              ],
+            },
+            {
+              type: "bar",
+              label: "Ouverts",
+              value: totals.emailsOpened,
+              pct: ratio(totals.emailsOpened, totals.emailsSent),
+            },
+            {
+              type: "bar",
+              label: "Cliqués",
+              value: totals.emailClicks,
+              pct: ratio(totals.emailClicks, totals.emailsSent),
+            },
+            {
+              type: "bar",
+              label: "Réponses",
+              value: totals.emailReplies,
+              pct: ratio(totals.emailReplies, totals.emailsSent),
+            },
+          ]}
+        />
       </section>
 
       <section className="flex flex-col gap-3">
