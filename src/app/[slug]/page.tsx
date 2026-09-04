@@ -94,7 +94,11 @@ export default async function ClientDashboardPage({
         {lastSync && (
           <p className="mt-1 text-[13px] text-ink-muted">
             Dernière synchronisation :{" "}
-            {lastSync.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}
+            {lastSync.toLocaleString("fr-FR", {
+              dateStyle: "long",
+              timeStyle: "short",
+              timeZone: "Europe/Paris",
+            })}
           </p>
         )}
       </div>
