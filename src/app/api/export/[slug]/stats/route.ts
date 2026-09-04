@@ -23,12 +23,19 @@ export async function GET(
     return NextResponse.json({ error: "Client introuvable" }, { status: 404 });
   }
 
-  const snapshots = await prisma.campaignSnapshot.findMany({
+  const campaigns = await prisma.campaign.findMany({
     where: {
-      campaign: { clientId: client.id, ...(campaignId ? { id: campaignId } : {}) },
+      clientId: client.id,
+      ...(campaignId ? { id: campaignId } : {}),
     },
-    include: { campaign: { select: { nameTag: true } } },
-    orderBy: [{ campaign: { nameTag: "asc" } }, { capturedAt: "asc" }],
+    select: {
+      nameTag: true,
+      snapshots: {
+        orderBy: { capturedAt: "desc" },
+        take: 1,
+      },
+    },
+    orderBy: { nameTag: "asc" },
   });
 
   const headers = [
@@ -57,31 +64,38 @@ export async function GET(
     "Mails rejetes",
   ];
 
-  const rows = snapshots.map((s) => ({
-    Date: s.capturedAt.toISOString(),
-    Campagne: s.campaign.nameTag,
-    Expediteur: s.sender,
-    "Taille audience": s.audienceSize,
-    Contactes: s.contacted,
-    Reponses: s.replies,
-    Gagnes: s.won,
-    Perdus: s.lost,
-    Termines: s.completed,
-    "Contactes LinkedIn": s.contactedLinkedin,
-    "Contactes email": s.contactedEmail,
-    "Demandes de connexion envoyees": s.connectionRequestsSent,
-    Relations: s.relations,
-    "Demandes de connexion acceptees": s.connectionRequestsAccepted,
-    "Messages LinkedIn envoyes": s.linkedinMessagesSent,
-    "Reponses LinkedIn": s.linkedinReplies,
-    "Deja connectes": s.alreadyConnected,
-    "Mails envoyes": s.emailsSent,
-    "Mails recus": s.emailsReceived,
-    "Mails ouverts": s.emailsOpened,
-    "Reponses mail": s.emailReplies,
-    "Clics mail": s.emailClicks,
-    "Mails rejetes": s.emailBounced,
-  }));
+  // A campaign has many historical snapshots. The export is intended as a
+  // current campaign summary, so retain only the latest snapshot per campaign.
+  const rows = campaigns.flatMap((campaign) => {
+    const snapshot = campaign.snapshots[0];
+    if (!snapshot) return [];
+
+    return [{
+      Date: snapshot.capturedAt.toISOString(),
+      Campagne: campaign.nameTag,
+      Expediteur: snapshot.sender,
+      "Taille audience": snapshot.audienceSize,
+      Contactes: snapshot.contacted,
+      Reponses: snapshot.replies,
+      Gagnes: snapshot.won,
+      Perdus: snapshot.lost,
+      Termines: snapshot.completed,
+      "Contactes LinkedIn": snapshot.contactedLinkedin,
+      "Contactes email": snapshot.contactedEmail,
+      "Demandes de connexion envoyees": snapshot.connectionRequestsSent,
+      Relations: snapshot.relations,
+      "Demandes de connexion acceptees": snapshot.connectionRequestsAccepted,
+      "Messages LinkedIn envoyes": snapshot.linkedinMessagesSent,
+      "Reponses LinkedIn": snapshot.linkedinReplies,
+      "Deja connectes": snapshot.alreadyConnected,
+      "Mails envoyes": snapshot.emailsSent,
+      "Mails recus": snapshot.emailsReceived,
+      "Mails ouverts": snapshot.emailsOpened,
+      "Reponses mail": snapshot.emailReplies,
+      "Clics mail": snapshot.emailClicks,
+      "Mails rejetes": snapshot.emailBounced,
+    }];
+  });
 
   const csv = toCsv(rows, headers);
 
