@@ -74,6 +74,8 @@ export async function syncCampaign(campaignId: string) {
           channel: step.channel,
           order: step.order,
           active: step.active,
+          content: step.contentHtml || null,
+          subject: step.subjectHtml || null,
         })),
       }),
     ]);

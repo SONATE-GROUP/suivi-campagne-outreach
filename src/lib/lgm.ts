@@ -244,6 +244,8 @@ export type LgmSequenceStep = {
   channel: string;
   order: number;
   active: boolean;
+  contentHtml?: string;
+  subjectHtml?: string;
 };
 
 type LgmCampaignMessagesResponse = {

@@ -46,6 +46,8 @@ model CampaignSequenceStep {
   channel       String
   order         Int
   active        Boolean
+  content       String?
+  subject       String?
 
   @@unique([campaignId, lgmMessageId])
   @@index([campaignId, order])
