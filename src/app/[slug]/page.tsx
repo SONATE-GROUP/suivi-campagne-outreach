@@ -127,21 +127,15 @@ export default async function ClientDashboardPage({
           rows={[
             {
               type: "bar",
-              label: "Contactés",
-              value: totals.contactedLinkedin,
-              pct: ratio(totals.contactedLinkedin, totals.audienceSize),
+              label: "Demandes de connexion",
+              value: totals.connectionRequestsSent,
+              pct: ratio(totals.connectionRequestsSent, totals.audienceSize),
             },
             {
               type: "bar",
               label: "Déjà en contact",
               value: totals.alreadyConnected,
-              pct: ratio(totals.alreadyConnected, totals.contactedLinkedin),
-            },
-            {
-              type: "bar",
-              label: "Demandes de connexion",
-              value: totals.connectionRequestsSent,
-              pct: ratio(totals.connectionRequestsSent, totals.contactedLinkedin),
+              pct: ratio(totals.alreadyConnected, totals.audienceSize),
             },
             {
               type: "bar",
@@ -151,9 +145,15 @@ export default async function ClientDashboardPage({
             },
             {
               type: "bar",
+              label: "Contactés",
+              value: totals.contactedLinkedin,
+              pct: ratio(totals.contactedLinkedin, totals.audienceSize),
+            },
+            {
+              type: "bar",
               label: "Réponses",
               value: totals.linkedinReplies,
-              pct: ratio(totals.linkedinReplies, totals.connectionRequestsSent),
+              pct: ratio(totals.linkedinReplies, totals.contactedLinkedin),
             },
           ]}
         />
