@@ -16,7 +16,8 @@ model Client {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  campaigns Campaign[]
+  campaigns           Campaign[]
+  hiddenConversations HiddenConversation[]
 }
 
 model Campaign {
@@ -86,4 +87,14 @@ model Lead {
   updatedAt     DateTime @updatedAt
 
   @@unique([campaignId, lgmLeadId])
+}
+
+model HiddenConversation {
+  id             String   @id @default(cuid())
+  clientId       String
+  client         Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  conversationId String
+  createdAt      DateTime @default(now())
+
+  @@unique([clientId, conversationId])
 }

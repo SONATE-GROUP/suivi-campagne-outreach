@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { InboxConversation } from "@/lib/inbox";
 import type { LgmMessage } from "@/lib/lgm";
 
@@ -16,14 +16,22 @@ const CHANNEL_ICON: Record<string, string> = {
 
 export function InboxView({
   slug,
-  conversations,
+  conversations: initialConversations,
 }: {
   slug: string;
   conversations: InboxConversation[];
 }) {
+  const [conversations, setConversations] = useState(initialConversations);
   const [selected, setSelected] = useState<InboxConversation | null>(null);
   const [messages, setMessages] = useState<LgmMessage[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showHidden, setShowHidden] = useState(false);
+
+  const hiddenCount = useMemo(() => conversations.filter((c) => c.hidden).length, [conversations]);
+  const visible = useMemo(
+    () => conversations.filter((c) => showHidden || !c.hidden),
+    [conversations, showHidden]
+  );
 
   async function openConversation(conv: InboxConversation) {
     setSelected(conv);
@@ -37,6 +45,20 @@ export function InboxView({
     }
   }
 
+  async function toggleHidden(conv: InboxConversation, e: React.MouseEvent) {
+    e.stopPropagation();
+    const method = conv.hidden ? "DELETE" : "POST";
+    await fetch(`/api/inbox/${slug}/hide`, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversationId: conv.id }),
+    });
+    setConversations((prev) =>
+      prev.map((c) => (c.id === conv.id ? { ...c, hidden: !c.hidden } : c))
+    );
+    if (selected?.id === conv.id) setSelected(null);
+  }
+
   if (conversations.length === 0) {
     return (
       <div className="flex h-64 items-center justify-center rounded-xl border border-ink-border bg-ink-card text-sm text-ink-muted">
@@ -46,90 +68,111 @@ export function InboxView({
   }
 
   return (
-    <div className="flex h-[calc(100vh-260px)] min-h-[420px] gap-4">
-      <div className="flex w-80 flex-shrink-0 flex-col overflow-y-auto rounded-xl border border-ink-border bg-ink-card">
-        {conversations.map((conv) => (
-          <button
-            key={conv.id}
-            onClick={() => openConversation(conv)}
-            className={`flex flex-col gap-1 border-b border-ink-border px-4 py-3 text-left transition last:border-0 ${
-              selected?.id === conv.id ? "bg-ink-border-strong" : "hover:bg-ink-border/40"
-            }`}
-          >
-            <div className="flex items-center justify-between gap-2">
-              <span className="truncate text-sm font-semibold text-ink-cream">
-                {conv.leadName}
-              </span>
-              <span className="shrink-0 text-xs">{CHANNEL_ICON[conv.lastMessageType] ?? ""}</span>
-            </div>
-            {conv.companyName && (
-              <span className="truncate text-xs text-ink-muted">{conv.companyName}</span>
-            )}
-            <div className="flex items-center justify-between gap-2">
-              <span className="truncate text-[11px] text-ink-muted-2">{conv.campaignNameTag}</span>
-              <span className="shrink-0 text-[11px] text-ink-muted-2">
-                {formatDate(conv.lastMessageAt)}
-              </span>
-            </div>
-          </button>
-        ))}
-      </div>
+    <div className="flex flex-col gap-3">
+      {hiddenCount > 0 && (
+        <button
+          onClick={() => setShowHidden((v) => !v)}
+          className="w-fit text-xs text-ink-muted underline underline-offset-2 hover:text-ink-cream"
+        >
+          {showHidden
+            ? "Masquer les conversations masquées"
+            : `Afficher les conversations masquées (${hiddenCount})`}
+        </button>
+      )}
 
-      <div className="flex flex-1 flex-col rounded-xl border border-ink-border bg-ink-card">
-        {!selected ? (
-          <div className="flex flex-1 items-center justify-center text-sm text-ink-muted">
-            Sélectionne une conversation pour voir les échanges.
-          </div>
-        ) : (
-          <>
-            <div className="flex items-center justify-between border-b border-ink-border px-5 py-3">
-              <div>
-                <p className="text-sm font-semibold text-ink-cream">{selected.leadName}</p>
-                <p className="text-xs text-ink-muted">
-                  {selected.companyName} · {selected.campaignNameTag}
-                </p>
+      <div className="flex h-[calc(100vh-260px)] min-h-[420px] gap-4">
+        <div className="flex w-80 flex-shrink-0 flex-col overflow-y-auto rounded-xl border border-ink-border bg-ink-card">
+          {visible.map((conv) => (
+            <div
+              key={conv.id}
+              onClick={() => openConversation(conv)}
+              className={`flex cursor-pointer flex-col gap-1 border-b border-ink-border px-4 py-3 text-left transition last:border-0 ${
+                selected?.id === conv.id ? "bg-ink-border-strong" : "hover:bg-ink-border/40"
+              } ${conv.hidden ? "opacity-50" : ""}`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate text-sm font-semibold text-ink-cream">
+                  {conv.leadName}
+                </span>
+                <span className="shrink-0 text-xs">{CHANNEL_ICON[conv.lastMessageType] ?? ""}</span>
               </div>
-              {selected.linkedinUrl && (
-                <a
-                  href={selected.linkedinUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs text-ink-orange underline underline-offset-2"
-                >
-                  Voir le profil LinkedIn
-                </a>
+              {conv.companyName && (
+                <span className="truncate text-xs text-ink-muted">{conv.companyName}</span>
               )}
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate text-[11px] text-ink-muted-2">
+                  {conv.campaignNameTag}
+                </span>
+                <span className="shrink-0 text-[11px] text-ink-muted-2">
+                  {formatDate(conv.lastMessageAt)}
+                </span>
+              </div>
+              <button
+                onClick={(e) => toggleHidden(conv, e)}
+                className="mt-1 w-fit text-[11px] text-ink-orange underline underline-offset-2"
+              >
+                {conv.hidden ? "Réafficher" : "Masquer la conversation"}
+              </button>
             </div>
+          ))}
+        </div>
 
-            <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-5 py-4">
-              {loading && <p className="text-sm text-ink-muted">Chargement...</p>}
-              {!loading && messages.length === 0 && (
-                <p className="text-sm text-ink-muted">Aucun message dans cette conversation.</p>
-              )}
-              {messages.map((m) => (
-                <div
-                  key={m.id}
-                  className={`flex flex-col gap-1 ${
-                    m.direction === "sent" ? "items-end" : "items-start"
-                  }`}
-                >
+        <div className="flex flex-1 flex-col rounded-xl border border-ink-border bg-ink-card">
+          {!selected ? (
+            <div className="flex flex-1 items-center justify-center text-sm text-ink-muted">
+              Sélectionne une conversation pour voir les échanges.
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between border-b border-ink-border px-5 py-3">
+                <div>
+                  <p className="text-sm font-semibold text-ink-cream">{selected.leadName}</p>
+                  <p className="text-xs text-ink-muted">
+                    {selected.companyName} · {selected.campaignNameTag}
+                  </p>
+                </div>
+                {selected.linkedinUrl && (
+                  <a
+                    href={selected.linkedinUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs text-ink-orange underline underline-offset-2"
+                  >
+                    Voir le profil LinkedIn
+                  </a>
+                )}
+              </div>
+
+              <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-5 py-4">
+                {loading && <p className="text-sm text-ink-muted">Chargement...</p>}
+                {!loading && messages.length === 0 && (
+                  <p className="text-sm text-ink-muted">Aucun message dans cette conversation.</p>
+                )}
+                {messages.map((m) => (
                   <div
-                    className={`max-w-[75%] rounded-xl px-3.5 py-2.5 text-sm ${
-                      m.direction === "sent"
-                        ? "bg-ink-orange text-white"
-                        : "border border-ink-border bg-ink-bg text-ink-cream"
+                    key={m.id}
+                    className={`flex flex-col gap-1 ${
+                      m.direction === "sent" ? "items-end" : "items-start"
                     }`}
                   >
-                    {m.content}
+                    <div
+                      className={`max-w-[75%] rounded-xl px-3.5 py-2.5 text-sm ${
+                        m.direction === "sent"
+                          ? "bg-ink-orange text-white"
+                          : "border border-ink-border bg-ink-bg text-ink-cream"
+                      }`}
+                    >
+                      {m.content}
+                    </div>
+                    <span className="text-[11px] text-ink-muted-2">
+                      {CHANNEL_ICON[m.channel] ?? ""} {formatDate(m.createdAt)}
+                    </span>
                   </div>
-                  <span className="text-[11px] text-ink-muted-2">
-                    {CHANNEL_ICON[m.channel] ?? ""} {formatDate(m.createdAt)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ export type InboxConversation = LgmConversation & {
   leadName: string;
   companyName: string | null;
   linkedinUrl: string | null;
+  hidden: boolean;
 };
 
 export async function getInboxConversations(clientId: string): Promise<InboxConversation[]> {
@@ -14,6 +15,12 @@ export async function getInboxConversations(clientId: string): Promise<InboxConv
     where: { id: clientId },
     include: { campaigns: { where: { active: true } } },
   });
+
+  const hidden = await prisma.hiddenConversation.findMany({
+    where: { clientId },
+    select: { conversationId: true },
+  });
+  const hiddenIds = new Set(hidden.map((h) => h.conversationId));
 
   const results = await Promise.all(
     client.campaigns.map(async (campaign) => {
@@ -40,6 +47,7 @@ export async function getInboxConversations(clientId: string): Promise<InboxConv
           leadName: name || "Prospect inconnu",
           companyName: lead?.companyName ?? null,
           linkedinUrl: lead?.linkedinUrl ?? null,
+          hidden: hiddenIds.has(c.id),
         };
       });
     })
